@@ -4,6 +4,7 @@ const express = require('express');
 const HttpError = require('../util/httpError');
 const log = require('../middlewares/logService');
 var Training = require('../models/trainingModel');
+const { check, validationResult } = require('express-validator');
 
 const trainingRouter = express.Router();
 
@@ -30,9 +31,23 @@ const router = function (trainingRepository) {
     });
 
     // create a training
-    trainingRouter.post('/new', async (req, res, next) => {
+    trainingRouter.post('/new',  [
+        check('topic').exists().withMessage('topic must be non-empty'),
+        check('description').exists().withMessage('description must be non-empty'),
+        check('trainerId').exists().withMessage('trainerId must be non-empty'),
+        check('currentAttendees').exists().withMessage('currentAttendees must be non-empty'),
+        check('location').exists().withMessage('location must be non-empty'),
+        check('duration').exists().withMessage('duration must be non-empty')
+      ], async (req, res, next) => {
         try {
-
+            const errors = validationResult(req);
+            if(!errors.isEmpty()){
+                let errorMessage = ``;
+                errors.array().forEach(error => {
+                    errorMessage += error.msg + ` \n`;
+                })
+                throw new HttpError(412, `${errorMessage}`);
+            }
             let training = new Training(null, req.body.topic, req.body.description, req.body.date, req.body.trainerId, req.body.seats, req.body.currentAttendees, req.body.location, req.body.duration);
             const result = await trainingRepository.createTraining(training, req.authenticatedUser);
     

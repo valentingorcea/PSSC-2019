@@ -13,12 +13,12 @@ import Check from "@material-ui/icons/Check";
 import Close from "@material-ui/icons/Close";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import TextField from '@material-ui/core/TextField';
+import TextField from "@material-ui/core/TextField";
 import basicsStyle from "assets/jss/material-kit-react/views/componentsSections/basicsStyle.jsx";
-import "assets/css/tableStyle.css"
+import "assets/css/tableStyle.css";
 
 //for requests
-import axios from 'axios';
+import axios from "axios";
 axios.defaults.withCredentials = true;
 
 function Transition(props) {
@@ -58,40 +58,42 @@ class SectionTable extends React.Component {
   }
 
   handlerGet = () => {
-    axios.get(process.env.REACT_APP_URL + `/ts/training`, {
-      headers: {
-        "Access-Control-Allow-Origin": "*",
-        "authorization": JSON.stringify({
-          userName: this.state.userName,
-          password: this.state.pass
-        })
-      },
-      withCredentials: true
-    })
+    axios
+      .get(process.env.REACT_APP_URL + `/ts/training`, {
+        headers: {
+          "Access-Control-Allow-Origin": "*",
+          authorization: JSON.stringify({
+            userName: this.state.userName,
+            password: this.state.pass
+          })
+        },
+        withCredentials: true
+      })
       .then(list => {
-        let total = list.data.trainings.reduce(function (prev, cur) {
+        let total = list.data.trainings.reduce(function(prev, cur) {
           return prev + cur.isCurrentUserAnAttendee;
         }, 0);
         this.setState({
           tableData: list.data.trainings,
           trainingsNumber: total
-        })
+        });
       });
-  }
+  };
 
-  handlerPost = (id) => {
-    axios.post(process.env.REACT_APP_URL + `/ts/training/` + id, null, {
-      headers: {
-        "Access-Control-Allow-Origin": "*",
-        "authorization": JSON.stringify({
-          userName: this.state.userName,
-          password: this.state.pass
-        })
-      },
-      withCredentials: true
-    })
+  handlerPost = id => {
+    axios
+      .post(process.env.REACT_APP_URL + `/ts/training/` + id, null, {
+        headers: {
+          "Access-Control-Allow-Origin": "*",
+          authorization: JSON.stringify({
+            userName: this.state.userName,
+            password: this.state.pass
+          })
+        },
+        withCredentials: true
+      })
       .then(list => {
-        let total = list.data.reduce(function (prev, cur) {
+        let total = list.data.reduce(function(prev, cur) {
           return prev + cur.isCurrentUserAnAttendee;
         }, 0);
         this.setState({
@@ -99,29 +101,30 @@ class SectionTable extends React.Component {
           trainingsNumber: total,
           showGIF: "none",
           accessedTraining: id
-        })
+        });
       })
       .catch(error => {
         this.setState({
           showGIF: "none",
           accessedTraining: 0
-        })
+        });
       });
-  }
+  };
 
-  handlerDelete = (id) => {
-    axios.put(process.env.REACT_APP_URL + `/ts/training/leave/` + id, null, {
-      headers: {
-        "Access-Control-Allow-Origin": "*",
-        "authorization": JSON.stringify({
-          userName: this.state.userName,
-          password: this.state.pass
-        })
-      },
-      withCredentials: true
-    })
+  handlerDelete = id => {
+    axios
+      .put(process.env.REACT_APP_URL + `/ts/training/leave/` + id, null, {
+        headers: {
+          "Access-Control-Allow-Origin": "*",
+          authorization: JSON.stringify({
+            userName: this.state.userName,
+            password: this.state.pass
+          })
+        },
+        withCredentials: true
+      })
       .then(list => {
-        let total = list.data.reduce(function (prev, cur) {
+        let total = list.data.reduce(function(prev, cur) {
           return prev + cur.isCurrentUserAnAttendee;
         }, 0);
         this.setState({
@@ -129,109 +132,133 @@ class SectionTable extends React.Component {
           trainingsNumber: total,
           showGIF: "none",
           accessedTraining: id
-        })
+        });
       })
       .catch(error => {
         this.setState({
           showGIF: "none",
           accessedTraining: 0
-        })
+        });
       });
-  }
+  };
 
-  handlerDeleteTraining = (id) => {
-    axios.delete(process.env.REACT_APP_URL + `/ts/training/` + id, {
-      headers: {
-        "Access-Control-Allow-Origin": "*",
-        "authorization": JSON.stringify({
-          userName: this.state.userName,
-          password: this.state.pass
-        })
-      },
-      withCredentials: true
-    })
+  handlerDeleteTraining = id => {
+    axios
+      .delete(process.env.REACT_APP_URL + `/ts/training/` + id, {
+        headers: {
+          "Access-Control-Allow-Origin": "*",
+          authorization: JSON.stringify({
+            userName: this.state.userName,
+            password: this.state.pass
+          })
+        },
+        withCredentials: true
+      })
       .then(list => {
-        let total = list.data.reduce(function (prev, cur) {
+        let total = list.data.reduce(function(prev, cur) {
           return prev + cur.isCurrentUserAnAttendee;
         }, 0);
         this.setState({
           tableData: list.data,
           trainingsNumber: total
-        })
-      });
-  }
+        });
+      })
+      .catch(err => {
+        alert(err);
+      })
+  };
 
-  handlerAssistToTraining = (id) => {
+  handlerAssistToTraining = id => {
     this.setState({
       showGIF: "block",
       accessedTraining: id
-    })
+    });
     this.handlerPost(id);
-  }
+  };
 
-  handleDateChange = (date) => {
+  handleDateChange = date => {
     this.setState({
       startDate: date
-    })
-  }
+    });
+  };
 
-  handlerLeaveTraining = (id) => {
+  handlerLeaveTraining = id => {
     this.setState({
       showGIF: "block",
       accessedTraining: id
-    })
+    });
     this.handlerDelete(id);
-  }
+  };
 
-  handlerCancelTraining = (id) => {
+  handlerCancelTraining = id => {
     this.handlerDeleteTraining(id);
-  }
+  };
 
   componentDidMount = () => {
     this.handlerGet();
-  }
+  };
 
   addNewTraining = () => {
-    axios.post(process.env.REACT_APP_URL + `/ts/training/new`, {
-      "topic": document.getElementById("topicField").value,
-      "description": document.getElementById("descriptionField").value,
-      "location": document.getElementById("locationField").value,
-      "trainer": 1,
-      "date": this.state.startDate,
-      "duration": document.getElementById("durationField").value,
-      "seats": document.getElementById("seatsField").value
-    }, {
-      headers: {
-        "Access-Control-Allow-Origin": "*",
-        "authorization": JSON.stringify({
-          userName: this.state.userName,
-          password: this.state.pass
-        })
-      },
-      withCredentials: true
-    })
+    if (
+      document.getElementById("topicField").value === "" ||
+      document.getElementById("descriptionField").value === "" ||
+      document.getElementById("locationField").value === "" ||
+      !this.state.startDate ||
+      document.getElementById("durationField").value === "" ||
+      document.getElementById("seatsField").value === ""
+    ) {
+      alert("Please insert data in every field");
+      return;
+    }
+    axios
+      .post(
+        process.env.REACT_APP_URL + `/ts/training/new`,
+        {
+          topic: document.getElementById("topicField").value,
+          description: document.getElementById("descriptionField").value,
+          location: document.getElementById("locationField").value,
+          trainer: 1,
+          date: this.state.startDate,
+          duration: document.getElementById("durationField").value,
+          seats: document.getElementById("seatsField").value
+        },
+        {
+          headers: {
+            "Access-Control-Allow-Origin": "*",
+            authorization: JSON.stringify({
+              userName: this.state.userName,
+              password: this.state.pass
+            })
+          },
+          withCredentials: true
+        }
+      )
       .then(list => {
-        let total = list.data.reduce(function (prev, cur) {
+        let total = list.data.reduce(function(prev, cur) {
           return prev + cur.isCurrentUserAnAttendee;
         }, 0);
         let resultTrainings = this.state.trainerTrainings.filter(obj => {
-          return this.state.trainings.filter(training => obj.meetingId !== training.selectedTrainingId)
-        })
+          return this.state.trainings.filter(
+            training => obj.meetingId !== training.selectedTrainingId
+          );
+        });
         let resultMeetings = this.state.trainerMeetings.filter(obj => {
-          return this.state.trainings.filter(training => obj.meetingId !== training.selectedTrainingId)
-        })
+          return this.state.trainings.filter(
+            training => obj.meetingId !== training.selectedTrainingId
+          );
+        });
 
         this.setState({
           tableData: list.data,
           trainingsNumber: total,
           trainerTrainings: resultTrainings,
           trainerMeetings: resultMeetings
-        })
+        });
       });
-  }
+  };
   componentWillReceiveProps = ({ userInfo }) => {
-    this.setState({ userInfo: userInfo })
-  }
+    this.setState({ userInfo: userInfo });
+  };
 
   render() {
     const { classes } = this.props;
@@ -240,16 +267,20 @@ class SectionTable extends React.Component {
         <div className={classes.container}>
           <div className={classes.title}>
             <h2>Available Trainings</h2>
-            {
-              this.state.userInfo.isTrainer === 1 ? (
-                <Button id="meetingsTrainer" round color="primary" onClick={() => this.handleClickOpen("classicModal")}>
-                  <People className={classes.icons} />Meetings
-                </Button>)
-                : null
-            }
-            {
-              this.state.userInfo.isTrainer === 0 ? (<h6>You are going to {this.state.trainingsNumber} trainings!</h6>) : null
-            }
+            {this.state.userInfo.isTrainer === 1 ? (
+              <Button
+                id="meetingsTrainer"
+                round
+                color="primary"
+                onClick={() => this.handleClickOpen("classicModal")}
+              >
+                <People className={classes.icons} />
+                Meetings
+              </Button>
+            ) : null}
+            {this.state.userInfo.isTrainer === 0 ? (
+              <h6>You are going to {this.state.trainingsNumber} trainings!</h6>
+            ) : null}
             <Dialog
               classes={{
                 root: classes.center,
@@ -276,7 +307,12 @@ class SectionTable extends React.Component {
                 >
                   <Close className={classes.modalClose} />
                 </IconButton>
-                <h4 style={{ paddingRight: 320 }} className={classes.modalTitle}>Add new training</h4>
+                <h4
+                  style={{ paddingRight: 320 }}
+                  className={classes.modalTitle}
+                >
+                  Add new training
+                </h4>
               </DialogTitle>
               <DialogContent
                 id="classic-modal-slide-description"
@@ -291,10 +327,10 @@ class SectionTable extends React.Component {
                     fullWidth
                     margin="normal"
                     InputLabelProps={{
-                      shrink: false,
+                      shrink: false
                     }}
                   />
-                  <br></br>
+                  <br />
                   <TextField
                     id="descriptionField"
                     /* label="Label" */
@@ -304,10 +340,10 @@ class SectionTable extends React.Component {
                     fullWidth
                     margin="normal"
                     InputLabelProps={{
-                      shrink: false,
+                      shrink: false
                     }}
                   />
-                  <br></br>
+                  <br />
                   <TextField
                     id="locationField"
                     style={{ margin: 8 }}
@@ -316,11 +352,11 @@ class SectionTable extends React.Component {
                     fullWidth
                     margin="normal"
                     InputLabelProps={{
-                      shrink: false,
+                      shrink: false
                     }}
                   />
-                  <br></br>
-                  <div style={{ margin: 8, width: "100%" }} >
+                  <br />
+                  <div style={{ margin: 8, width: "100%" }}>
                     <DatePicker
                       style={{ width: "100%" }}
                       selected={this.state.startDate}
@@ -329,7 +365,7 @@ class SectionTable extends React.Component {
                       onChange={this.handleDateChange}
                     />
                   </div>
-                  <br></br>
+                  <br />
                   <TextField
                     id="durationField"
                     /* label="Label" */
@@ -340,10 +376,10 @@ class SectionTable extends React.Component {
                     type="number"
                     margin="normal"
                     InputLabelProps={{
-                      shrink: false,
+                      shrink: false
                     }}
                   />
-                  <br></br>
+                  <br />
                   <TextField
                     id="seatsField"
                     style={{ margin: 8 }}
@@ -353,21 +389,35 @@ class SectionTable extends React.Component {
                     margin="normal"
                     type="number"
                     InputLabelProps={{
-                      shrink: false,
+                      shrink: false
                     }}
                   />
                 </GridContainer>
                 <GridContainer key="secondContainer" justify="center">
-                  <Button style={{ marginBottom: 20 }} round color="success" onClick={() => this.addNewTraining()}>
-                    <Check className={classes.icons} />Add
-            </Button>
+                  <Button
+                    style={{ marginBottom: 20 }}
+                    round
+                    color="success"
+                    onClick={() => this.addNewTraining()}
+                  >
+                    <Check className={classes.icons} />
+                    Add
+                  </Button>
                 </GridContainer>
-
               </DialogContent>
             </Dialog>
           </div>
           <GridContainer justify="center">
-            <SimpleTable tableData={this.state.tableData} showGIF={this.state.showGIF} accessedTraining={this.state.accessedTraining} userInfo={this.state.userInfo} currentUserName={this.state.userInfo.officialName} handlerAssistToTraining={this.handlerAssistToTraining} handlerLeaveTraining={this.handlerLeaveTraining} handlerCancelTraining={this.handlerCancelTraining} />
+            <SimpleTable
+              tableData={this.state.tableData}
+              showGIF={this.state.showGIF}
+              accessedTraining={this.state.accessedTraining}
+              userInfo={this.state.userInfo}
+              currentUserName={this.state.userInfo.officialName}
+              handlerAssistToTraining={this.handlerAssistToTraining}
+              handlerLeaveTraining={this.handlerLeaveTraining}
+              handlerCancelTraining={this.handlerCancelTraining}
+            />
           </GridContainer>
         </div>
       </div>
